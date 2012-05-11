@@ -29,12 +29,12 @@ package com.model
 	{
 		private static var thisObj:Remote;
 		public static const IJOINED_ADDMYSNAKE:String = "ijoinedaddsnake";
-		public static const SNAKE_NAME_CHANGE:String = "snakenameChange";
 		public static const UPDATE_SNAKES_QUANTITY:String = "updatequantity";
 		public static const SUMBODY_BEFORE_YOU:String = "someBodybeforeyou";
-		public static const SUMBODY_AFTER_YOU:String = "someBodyafteryou";
 		public static const SUMBODY_LEFT:String = "someBodyleft";
 		public static const UPDATEUSERLIST:String = "updateuserlist";
+		public static const ROOMREADY:String = "roomready";
+		public static const UPDATE_ATTRIBUTES:String = "updtAtrbute";
 		
 		public static var MANAGER:RoomManager;
 		public static var MESSAGE_MANAGER:MessageManager;
@@ -68,27 +68,20 @@ package com.model
 		protected function readyListener (e:ReactorEvent):void {
 			MANAGER = reactor.getRoomManager();
 			chatRoom = MANAGER.createRoom("bala");
-			//chatRoom.addMessageListener(CustomEvent.ABOUT_SNAKEDATA,gotMessageForSnake);
-			//chatRoom.addMessageListener(CustomEvent.CHAT_MESSAGE,gotMessageForChat);
-			//chatRoom.addMessageListener(CustomEvent.ABOUT_DIRECTION,gotMessageForDirections);
+			
 			chatRoom.addEventListener(RoomEvent.JOIN,joinRoomListener);
 			chatRoom.addEventListener(RoomEvent.ADD_OCCUPANT,addClientListener);
 			chatRoom.addEventListener(RoomEvent.REMOVE_OCCUPANT,removeClientListener);
 			chatRoom.addEventListener(RoomEvent.UPDATE_CLIENT_ATTRIBUTE,updateClientAttributeListener);
 			chatRoom.join();
+			dispatchEvent(new Event(Remote.ROOMREADY));
 		}
-		/*protected function gotMessageForDirections(fromClient:IClient,messageText:String):void {
-			mvController.tellToController_GotDirections(getUserName(fromClient),messageText);
-		}*/
-		// Method invoked when a chat messageText(message+score) is received
-		/*protected function gotMessageForSnake(fromClient:IClient,messageText:String):void {
-			trace("dd1 Remote got messageText1=",messageText)
-			var tempPlayer:PlayerDataVO = new PlayerDataVO();
-			tempPlayer.setStr(messageText);
-			tempPlayer.name = getUserName(fromClient);
-			trace("dd1 Remote got messageText2=",tempPlayer.getStr());
-			MoveController.getInstance().tellToController_Snake(tempPlayer);
-		}*/
+		
+		// Method invoked when the current client joins the room
+		protected function joinRoomListener (e:RoomEvent):void {
+			trace("ddd joinRoomListener_____________________");
+			updateUserList();
+		}
 		
 		// Method invoked when a client joins the room
 		protected function addClientListener (e:RoomEvent):void {
@@ -102,11 +95,10 @@ package com.model
 				dispatchEvent(new CustomEvent(Remote.IJOINED_ADDMYSNAKE,tempPlayer));
 			} else {
 				if (chatRoom.getSyncState() != SynchronizationState.SYNCHRONIZING) {
+					dispatchEvent(new CustomEvent(Remote.IJOINED_ADDMYSNAKE,e));
 					//trace("dd1 somebody joined the room",getUserName(e.getClient())," sentMessage=",Board.thisObj.currentSnakeStatus().getStr());
 					// Show a "guest joined" message only when the room isn't performing
 					// its initial occupant-list synchronization.
-					//Board.thisObj.incomingMessages.appendText(getUserName(e.getClient())+ " joined the chat.\n");
-					//e.getClient().sendMessage(MsgController.ABOUT_SNAKEDATA,Board.thisObj.currentSnakeStatus().getStr());
 				}
 			}
 			
@@ -114,16 +106,11 @@ package com.model
 			updateUserList(true);
 		}
 		
-		// Method invoked when the current client joins the room
-		protected function joinRoomListener (e:RoomEvent):void {
-			trace("ddd joinRoomListener_____________________");
-			updateUserList();
-		}
 		// Method invoked when a client leave the room
 		protected function removeClientListener (e:RoomEvent):void {
 			trace("ddd removeClientListener_____________________");
 			/*Board.thisObj.incomingMessages.appendText(getUserName(e.getClient())
-				+ " left the chat.\n");
+			+ " left the chat.\n");
 			Board.thisObj.incomingMessages.scrollV = Board.thisObj.incomingMessages.maxScrollV;*/
 			dispatchEvent(new CustomEvent(Remote.SUMBODY_LEFT,getUserName(e.getClient())));
 			updateUserList();
@@ -168,24 +155,8 @@ package com.model
 		// Method invoked when any client in the room
 		// changes the value of a shared attribute
 		protected function updateClientAttributeListener (e:RoomEvent):void {
-			/*var changedAttr:Attribute = e.getChangedAttr();
-			var objj:Object = new Object();
-			//trace("dd1 atribute changed",changedAttr);
-			if (changedAttr.name == "username") {
-				if (changedAttr.oldValue == null) {
-					Board.thisObj.incomingMessages.appendText("Guest" + e.getClientID());
-					objj.oldN = "Guest" + e.getClientID();
-				} else {
-					Board.thisObj.incomingMessages.appendText(changedAttr.oldValue);
-					objj.oldN = changedAttr.oldValue;
-				}
-				objj.newN =  getUserName(e.getClient());
-				trace("ddd Remote dispatching name changed=",objj.oldN," TO ",objj.newN);
-				dispatchEvent(new CustomEvent(Remote.SNAKE_NAME_CHANGE,objj));
-				Board.thisObj.incomingMessages.appendText(" 's name changed to "+ getUserName(e.getClient())+ ".\n");
-				Board.thisObj.incomingMessages.scrollV = Board.thisObj.incomingMessages.maxScrollV;
-				updateUserList();
-			}*/
+			dispatchEvent(new CustomEvent(Remote.UPDATE_ATTRIBUTES,e));
+			updateUserList();
 		}
 		
 		// Keyboard listener for nameInput
@@ -197,15 +168,6 @@ package com.model
 				e.target.text = "";
 			}
 		}
-		
-		/*protected function gotMessageForChat (fromClient:IClient,messageText:String):void {
-			Board.thisObj.incomingMessages.appendText(getUserName(fromClient) + " says: " + messageText+ "\n");
-			Board.thisObj.incomingMessages.scrollV = Board.thisObj.incomingMessages.maxScrollV;
-		}
-		
-		public function tellToAllAboutFood():void{
-			chatRoom.sendMessage(MsgController.ADDFOOD_AT,true,null,foodData.getString());
-		}*/
 	}
 }
 
