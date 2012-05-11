@@ -33,7 +33,6 @@ package com.model
 		public static const SUMBODY_LEFT:String = "someBodyleft";
 		public static const UPDATEUSERLIST:String = "updateuserlist";
 		public static const ROOMREADY:String = "roomready";
-		public static const UPDATE_ATTRIBUTES:String = "updtAtrbute";
 		
 		public static var MANAGER:RoomManager;
 		public static var MESSAGE_MANAGER:MessageManager;
@@ -71,7 +70,6 @@ package com.model
 			chatRoom.addEventListener(RoomEvent.JOIN,joinRoomListener);
 			chatRoom.addEventListener(RoomEvent.ADD_OCCUPANT,addClientListener);
 			chatRoom.addEventListener(RoomEvent.REMOVE_OCCUPANT,removeClientListener);
-			chatRoom.addEventListener(RoomEvent.UPDATE_CLIENT_ATTRIBUTE,updateClientAttributeListener);
 			chatRoom.join();
 			dispatchEvent(new Event(Remote.ROOMREADY));
 		}
@@ -145,13 +143,6 @@ package com.model
 			} else {
 				return username;
 			}
-		}
-		
-		// Method invoked when any client in the room
-		// changes the value of a shared attribute
-		protected function updateClientAttributeListener (e:RoomEvent):void {
-			dispatchEvent(new CustomEvent(Remote.UPDATE_ATTRIBUTES,e));
-			updateUserList();
 		}
 		
 		// Keyboard listener for nameInput
