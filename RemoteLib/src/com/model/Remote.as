@@ -29,7 +29,6 @@ package com.model
 	{
 		private static var thisObj:Remote;
 		public static const IJOINED_ADDMYSNAKE:String = "ijoinedaddsnake";
-		public static const UPDATE_SNAKES_QUANTITY:String = "updatequantity";
 		public static const SUMBODY_BEFORE_YOU:String = "someBodybeforeyou";
 		public static const SUMBODY_LEFT:String = "someBodyleft";
 		public static const UPDATEUSERLIST:String = "updateuserlist";
@@ -118,20 +117,16 @@ package com.model
 		
 		// Helper method to display the room's
 		// clients in the user list
-		private var userList:int = 1;
 		protected function updateUserList (checkBeforeYou:Boolean = false):void {
 			var tempList:int = 0;
 			dispatchEvent(new CustomEvent(Remote.UPDATEUSERLIST,true));
-			//for new snakes add or remove..
-			if(userList != tempList){
-				userList = tempList;
-				trace("ddd List Snakes Updating2...",userList)
-				dispatchEvent(new CustomEvent(Remote.UPDATE_SNAKES_QUANTITY,chatRoom.getOccupants()));
+			for each (var client:IClient in chatRoom.getOccupants()) {
+				tempList++;
 			}
 			
 			//check snakes before you..
 			if(checkBeforeYou == true){
-				trace("dd1 check before me...",tempList)
+				trace("dd1 check before me...",tempList);
 				if(tempList>1){
 					dispatchEvent(new CustomEvent(Remote.SUMBODY_BEFORE_YOU,true));
 				}else{
