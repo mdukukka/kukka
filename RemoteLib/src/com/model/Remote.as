@@ -90,6 +90,8 @@ package com.model
 				tempPlayer.directon = "RR";
 				tempPlayer.score = "0";
 				dispatchEvent(new CustomEvent(Remote.IJOINED_ADDMYSNAKE,tempPlayer));
+				//check the snake before you..
+				updateUserList(true);
 			} else {
 				if (chatRoom.getSyncState() != SynchronizationState.SYNCHRONIZING) {
 					dispatchEvent(new CustomEvent(Remote.IJOINED_ADDMYSNAKE,e));
@@ -98,18 +100,13 @@ package com.model
 					// its initial occupant-list synchronization.
 				}
 			}
-			
-			//check the snake before you..
-			updateUserList(true);
+			updateUserList();
 		}
 		
 		// Method invoked when a client leave the room
 		protected function removeClientListener (e:RoomEvent):void {
 			trace("ddd removeClientListener_____________________");
-			/*Board.thisObj.incomingMessages.appendText(getUserName(e.getClient())
-			+ " left the chat.\n");
-			Board.thisObj.incomingMessages.scrollV = Board.thisObj.incomingMessages.maxScrollV;*/
-			dispatchEvent(new CustomEvent(Remote.SUMBODY_LEFT,getUserName(e.getClient())));
+			dispatchEvent(new CustomEvent(Remote.SUMBODY_LEFT,e));
 			updateUserList();
 		}
 		
