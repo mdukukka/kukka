@@ -23,6 +23,7 @@ package com.model
 	import net.user1.reactor.Room;
 	import net.user1.reactor.RoomEvent;
 	import net.user1.reactor.RoomManager;
+	import net.user1.reactor.RoomSettings;
 	import net.user1.reactor.SynchronizationState;
 	
 	public class Remote extends EventDispatcher
@@ -32,7 +33,7 @@ package com.model
 		public static const SUMBODY_BEFORE_YOU:String = "someBodybeforeyou";
 		public static const SUMBODY_LEFT:String = "someBodyleft";
 		public static const UPDATEUSERLIST:String = "updateuserlist";
-		public static const ROOMREADY:String = "roomready";
+		public static const SERVERREADY:String = "reactorReday";
 		
 		public static var MANAGER:RoomManager;
 		public static var MESSAGE_MANAGER:MessageManager;
@@ -64,14 +65,21 @@ package com.model
 		
 		// Method invoked when the connection is ready
 		protected function readyListener (e:ReactorEvent):void {
-			MANAGER = reactor.getRoomManager();
-			chatRoom = MANAGER.createRoom("bala");
+			dispatchEvent(new Event(Remote.SERVERREADY));
+		}
+		
+		//MsgController
+		public function joinRoom(roomName:String):void{
+			// Create a room that doesn't go away when no one is in it
+			//var roomSettings:RoomSettings = new RoomSettings();
+			//roomSettings.removeOnEmpty = false;  //roomSettings.dieOnEmpty = false;
 			
+			MANAGER = reactor.getRoomManager();
+			chatRoom = MANAGER.createRoom(roomName);
 			chatRoom.addEventListener(RoomEvent.JOIN,joinRoomListener);
 			chatRoom.addEventListener(RoomEvent.ADD_OCCUPANT,addClientListener);
 			chatRoom.addEventListener(RoomEvent.REMOVE_OCCUPANT,removeClientListener);
 			chatRoom.join();
-			dispatchEvent(new Event(Remote.ROOMREADY));
 		}
 		
 		// Method invoked when the current client joins the room
@@ -150,6 +158,19 @@ package com.model
 				self.setAttribute("username", e.target.text);
 				e.target.text = "";
 			}
+		}
+		
+		public function disconnectMe():void{
+			// You don't need to call the leave() function since
+			// the disconnect will remove the client when the
+			// connection is closed but it is a good practice in
+			// case something goes wrong in the disconnect and
+			// the user appears as a ghost (ghosts are eventually
+			// removed by the server when they cannot be reached).
+			if(chatRoom != null)
+				chatRoom.leave();
+			
+			//reactor.close();
 		}
 	}
 }
