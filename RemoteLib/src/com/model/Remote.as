@@ -94,7 +94,7 @@ package com.model
 			if (e.getClient().isSelf()) {
 				trace("ddd You joined the chat.");
 				var tempPlayer:PlayerDataVO = new PlayerDataVO();
-				tempPlayer.name = getUserName(e.getClient());
+				tempPlayer.name = "tempName";
 				tempPlayer.directon = "RR";
 				tempPlayer.score = "0";
 				dispatchEvent(new CustomEvent(Remote.IJOINED_ADDMYSNAKE,tempPlayer));
@@ -141,23 +141,20 @@ package com.model
 		// Helper method to retrieve a client's user name.
 		// If no user name is set for the specified client,
 		// returns "Guestn" (where 'n' is the client's id).  
-		public function getUserName (client:IClient):String {
-			var username:String = client.getAttribute("username");
-			if (username == null){
-				return "Guest" + client.getClientID();
-			} else {
-				return username;
-			}
+		/*public function getUserName (client:IClient):String {
+		var username:String = client.getAttribute("username");
+		if (username == null){
+		return "Guest" + client.getClientID();
+		} else {
+		return username;
 		}
+		}*/
 		
 		// Keyboard listener for nameInput
-		public function nameKeyUpListener (e:KeyboardEvent):void {
+		public function setMyName (faceBookName:String):void {
 			var self:IClient;
-			if (e.keyCode == Keyboard.ENTER) {
-				self = reactor.self();
-				self.setAttribute("username", e.target.text);
-				e.target.text = "";
-			}
+			self = reactor.self();
+			self.setAttribute("username",faceBookName);
 		}
 		
 		public function disconnectMe():void{

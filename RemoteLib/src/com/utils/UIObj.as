@@ -10,6 +10,8 @@ package com.utils
 		// Create textField and add to ref
 		public static function creatTxt (ref:DisplayObjectContainer,ww:Number = 10,hh:Number = 10,xx:Number=10,yy:Number=10,border:Boolean = true,bg:Boolean= true,col:int = 0xfffffc):TextField {
 			var tempTxt:TextField = new TextField;
+			tempTxt.multiline = true;
+			tempTxt.wordWrap = true;
 			tempTxt.type = TextFieldType.INPUT;
 			tempTxt.border = border;
 			tempTxt.background = bg;
