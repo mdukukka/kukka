@@ -43,8 +43,7 @@ package com.model
 		private var strP:StringParser;
 		public var foodData:FoodDataVo = new FoodDataVo();
 		
-		public function Remote(p_key:SingletonBlocker)
-		{
+		public function Remote(p_key:SingletonBlocker){
 			if (p_key == null) {
 				throw new Error("Error:Use MoveController.getInstance() instead of new.");
 			}
@@ -53,6 +52,10 @@ package com.model
 			reactor.addEventListener(ReactorEvent.READY,readyListener);
 			// Connect to the server
 			reactor.connect("tryunion.com", 80);
+		}
+		
+		protected function justUpdateuserList(fromClient:IClient,messageText:String):void {
+			dispatchEvent(new CustomEvent(Remote.UPDATEUSERLIST,true));
 		}
 		
 		public static function getInstance():Remote{
@@ -79,6 +82,7 @@ package com.model
 			chatRoom.addEventListener(RoomEvent.JOIN,joinRoomListener);
 			chatRoom.addEventListener(RoomEvent.ADD_OCCUPANT,addClientListener);
 			chatRoom.addEventListener(RoomEvent.REMOVE_OCCUPANT,removeClientListener);
+			chatRoom.addMessageListener("justUpdate",justUpdateuserList);
 			chatRoom.join();
 		}
 		
@@ -92,18 +96,19 @@ package com.model
 		protected function addClientListener (e:RoomEvent):void {
 			trace("ddd addClientListener_______________");
 			if (e.getClient().isSelf()) {
-				trace("ddd You joined the chat.");
+				trace("fll You joined the chat.");
 				var tempPlayer:PlayerDataVO = new PlayerDataVO();
 				tempPlayer.name = "tempName";
 				tempPlayer.directon = "RR";
 				tempPlayer.score = "0";
 				dispatchEvent(new CustomEvent(Remote.IJOINED_ADDMYSNAKE,tempPlayer));
 				//check the snake before you..
+				dispatchEvent(new CustomEvent(Remote.UPDATEUSERLIST,true));
 				updateUserList(true);
 			} else {
 				if (chatRoom.getSyncState() != SynchronizationState.SYNCHRONIZING) {
+					trace("fll somebody..")
 					dispatchEvent(new CustomEvent(Remote.IJOINED_ADDMYSNAKE,e));
-					//trace("dd1 somebody joined the room",getUserName(e.getClient())," sentMessage=",Board.thisObj.currentSnakeStatus().getStr());
 					// Show a "guest joined" message only when the room isn't performing
 					// its initial occupant-list synchronization.
 				}
@@ -115,6 +120,7 @@ package com.model
 		protected function removeClientListener (e:RoomEvent):void {
 			trace("ddd removeClientListener_____________________");
 			dispatchEvent(new CustomEvent(Remote.SUMBODY_LEFT,e));
+			dispatchEvent(new CustomEvent(Remote.UPDATEUSERLIST,true));
 			updateUserList();
 		}
 		
@@ -122,7 +128,6 @@ package com.model
 		// clients in the user list
 		protected function updateUserList (checkBeforeYou:Boolean = false):void {
 			var tempList:int = 0;
-			dispatchEvent(new CustomEvent(Remote.UPDATEUSERLIST,true));
 			for each (var client:IClient in chatRoom.getOccupants()) {
 				tempList++;
 			}
@@ -139,22 +144,15 @@ package com.model
 		}
 		
 		// Helper method to retrieve a client's user name.
-		// If no user name is set for the specified client,
-		// returns "Guestn" (where 'n' is the client's id).  
-		/*public function getUserName (client:IClient):String {
-		var username:String = client.getAttribute("username");
-		if (username == null){
-		return "Guest" + client.getClientID();
-		} else {
-		return username;
-		}
-		}*/
+		//return "Guest" + client.getClientID();
 		
 		// Keyboard listener for nameInput
-		public function setMyName (faceBookName:String):void {
+		public function setMyFBData(faceBookName:String,faceBookId:String,faceBookIMG:String):void {
 			var self:IClient;
 			self = reactor.self();
-			self.setAttribute("username",faceBookName);
+			self.setAttribute("unm",faceBookName);
+			self.setAttribute("uid",faceBookId);
+			self.setAttribute("uimg",faceBookIMG);
 		}
 		
 		public function disconnectMe():void{
