@@ -103,7 +103,6 @@ package com.model
 				tempPlayer.score = "0";
 				dispatchEvent(new CustomEvent(Remote.IJOINED_ADDMYSNAKE,tempPlayer));
 				//check the snake before you..
-				dispatchEvent(new CustomEvent(Remote.UPDATEUSERLIST,true));
 				updateUserList(true);
 			} else {
 				if (chatRoom.getSyncState() != SynchronizationState.SYNCHRONIZING) {
