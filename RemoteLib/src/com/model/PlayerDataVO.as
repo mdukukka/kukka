@@ -4,7 +4,8 @@ package com.model
 
 	public final class PlayerDataVO
 	{
-		public var name:String = "";
+		public var unm:String = "";
+		public var speed:Number = 500;
 		public var directon:String = "";
 		public var score:String = "";
 		public var col:String = "";
@@ -15,11 +16,11 @@ package com.model
 		
 		
 		public function getStr():String{
-			return "name="+name+";directon="+directon+";score="+score+";col="+col+";xx="+xx+";yy="+yy;
+			return "unm="+unm+";directon="+directon+";score="+score+";col="+col+";xx="+xx+";yy="+yy+";speed="+speed;
 		}
 		
 		public function setStr(str:String):void{
-			name = StringParser.parseValuesAt(str,"name");
+			unm = StringParser.parseValuesAt(str,"unm");
 			directon = StringParser.parseValuesAt(str,"directon");
 			score = StringParser.parseValuesAt(str,"score");
 			col = StringParser.parseValuesAt(str,"col");

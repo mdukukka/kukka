@@ -5,6 +5,8 @@
 package com.Elements  {
 	
 	import com.model.PlayerDataVO;
+	import com.model.Remote;
+	
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
@@ -23,7 +25,7 @@ package com.Elements  {
 		public var timer:Timer;//for sync to Remote Time on Board
 		private var dead:Boolean;
 		private var min_elements:int; //holds how many parts should the snake have at the beginning
-		//private var apple:Element; //Our apple
+		//private var apple:Element;
 		private var space_value:Number; //space between the snake parts
 		public var last_button_down:uint; //the keyCode of the last button pressed to any snake (bala)
 		public var flag:Boolean; //is it allowed to change direction? bala
@@ -50,7 +52,7 @@ package com.Elements  {
 			snake_vector = new Vector.<Element>;
 			markers_vector = new Vector.<Object>;
 			space_value = 2;
-			timer = new Timer(150); //Every 50th millisecond, the moveIt() function will be fired!
+			timer = new Timer(1200); //Every 50th millisecond, the moveIt() function will be fired!
 			dead = false;
 			min_elements = 1;
 			//apple = new Element(0xFF0000, 1,10, 10); //red, not transparent, width:10, height: 10;
@@ -105,28 +107,27 @@ package com.Elements  {
 			}
 			this.addChild(who);
 		}
-		public function iGotFood():void{
-			trace("Igot food in Snake Comp");
+		public function iGotFood():void{}
+		public function iGotFoodAddMyElement():void{
+			//show the current Score
+			trace("dd5 iGotFoodAddMyElement",Remote.playerData.unm);
+			score += moveController.apple.catchValue;
+			score_tf.text = "Score:" + String(score);
+			playerData.score = String(score);
+			//Attach a new snake Element
+			snake_vector.push(new Element(0x00AAFF,1,10,10));
+			snake_vector[snake_vector.length-1].direction = snake_vector[snake_vector.length-2].direction; //lastOneRichtung
+			attachElement(snake_vector[snake_vector.length-1],
+				(snake_vector[snake_vector.length-2].x),
+				snake_vector[snake_vector.length-2].y,
+				snake_vector[snake_vector.length-2].direction);
 		}
 		//Moving Snake..
 		private function moveIt(e:TimerEvent):void{
 			if(moveController && moveController.apple && remoteSnake == false){
 				if (snake_vector[0].x == moveController.apple.x && snake_vector[0].y == moveController.apple.y){
-					//placeApple();
-					trace("dd1 dispatching..I_GOT_FOOD");
-					//dispatchEvent(new Event(MySnake.I_GOT_FOOD));
 					iGotFood();
-					//show the current Score
-					score += moveController.apple.catchValue;
-					score_tf.text = "Score:" + String(score);
-					playerData.score = String(score);
-					//Attach a new snake Element
-					snake_vector.push(new Element(0x00AAFF,1,10,10));
-					snake_vector[snake_vector.length-1].direction = snake_vector[snake_vector.length-2].direction; //lastOneRichtung
-					attachElement(snake_vector[snake_vector.length-1],
-						(snake_vector[snake_vector.length-2].x),
-						snake_vector[snake_vector.length-2].y,
-						snake_vector[snake_vector.length-2].direction);
+					
 				}
 			}
 			if(remoteSnake == false){
