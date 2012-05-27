@@ -37,9 +37,11 @@ package com.Elements  {
 		private var parentWW:Number;
 		private var parentHH:Number;
 		private var moveController:Object;
+		public var col:int;
 		
-		public function Snake(_remoteSnake:Boolean,_moveController:Object,_parentWW:Number,_parentHH:Number) 
+		public function Snake(_remoteSnake:Boolean,_moveController:Object,_parentWW:Number,_parentHH:Number,_col:int) 
 		{
+			col = _col;
 			moveController = _moveController;
 			parentWW = _parentWW;
 			parentHH = _parentHH;
@@ -64,7 +66,7 @@ package com.Elements  {
 			
 			//Create the first <min_elements> Snake parts
 			for(var i:int=0;i<min_elements;++i){
-				snake_vector[i] = new Element(0x00AAFF,1,10,10);
+				snake_vector[i] = new Element(col,1,10,10);
 				//snake_vector[i].rotationZ = Math.random()*45;
 				snake_vector[i].direction = "R"; //The starting direction of the snake
 				if (i == 0){
@@ -115,7 +117,7 @@ package com.Elements  {
 			score_tf.text = "Score:" + String(score);
 			playerData.score = String(score);
 			//Attach a new snake Element
-			snake_vector.push(new Element(0x00AAFF,1,10,10));
+			snake_vector.push(new Element(col,1,10,10));
 			snake_vector[snake_vector.length-1].direction = snake_vector[snake_vector.length-2].direction; //lastOneRichtung
 			attachElement(snake_vector[snake_vector.length-1],
 				(snake_vector[snake_vector.length-2].x),
@@ -156,6 +158,7 @@ package com.Elements  {
 					if (snake_vector[i] != snake_vector[0] && (snake_vector[0].x == snake_vector[i].x && snake_vector[0].y == snake_vector[i].y))
 					{
 						GAME_OVER();
+						return;
 					}
 				}
 				
@@ -182,14 +185,13 @@ package com.Elements  {
 			flag = true;
 		}
 		
-		private function GAME_OVER():void 
-		{
+		private function GAME_OVER():void {
 			dead = true;
 			timer.stop();
 			while (this.numChildren)
 				this.removeChildAt(0);
 			timer.removeEventListener(TimerEvent.TIMER,moveIt);
-			//stage.removeEventListener(KeyboardEvent.KEY_DOWN,directionChanged);
+			dispatchEvent(new Event("died"));
 			init();
 		}
 		

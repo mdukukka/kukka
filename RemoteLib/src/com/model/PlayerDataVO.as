@@ -8,7 +8,7 @@ package com.model
 		public var speed:Number = 500;
 		public var directon:String = "";
 		public var score:String = "";
-		public var col:String = "";
+		public var col:int;
 		public var rawData:String = "";
 		public var xx:Number = 50;
 		public var yy:Number = 50;
@@ -23,7 +23,7 @@ package com.model
 			unm = StringParser.parseValuesAt(str,"unm");
 			directon = StringParser.parseValuesAt(str,"directon");
 			score = StringParser.parseValuesAt(str,"score");
-			col = StringParser.parseValuesAt(str,"col");
+			col = int(StringParser.parseValuesAt(str,"col"));
 			xx = Number(StringParser.parseValuesAt(str,"xx"));
 			yy = Number(StringParser.parseValuesAt(str,"yy"));
 			rawData = str;
