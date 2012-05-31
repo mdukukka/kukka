@@ -4,7 +4,9 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.IOErrorEvent;
 	import flash.events.NetStatusEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.*;
 	
 	public class AMF extends EventDispatcher{
@@ -15,13 +17,18 @@
 			// constructor code
 			gw = new NetConnection();
 			gw.addEventListener(NetStatusEvent.NET_STATUS,netStatusHandler);
+			gw.addEventListener(IOErrorEvent.IO_ERROR,netStatusHandler);
+			gw.addEventListener(SecurityErrorEvent.SECURITY_ERROR,netStatusHandler);
+			var str:String;
 			if(gateway ==""){
-				gw.connect("http://vamsibalu.ueuo.com/amfphp/gateway.php");//http://localhost/amfphp%201.9/gateway.php
-				trace("AMF connecting http://vamsibalu.ueuo.com/amfphp/gateway.php")
+				str = "http://vamsibalu.ueuo.com/amfphp/gateway.php";//http://localhost/amfphp%201.9/gateway.php
 			}else{
-				gw.connect(gateway);
+				str = gateway;
 			}
+			gw.connect(str);
+			trace("AMF connecting ..")
 			res= new Responder(onResult,onFault);
+			getKey("key");
 		}
 		
 		
@@ -35,7 +42,7 @@
 				trace("AMF Connection rejected - not allowed to connect");
 			} else if (event.info.code == "NetConnection.Connect.Success") {
 				trace("AMF Connection has succeeded");
-				getKey();
+				//getKey();
 			} else if (event.info.code == "NetConnection.Connect.Closed") {
 				trace("AMF Connection has closed");
 			}
@@ -55,8 +62,8 @@
 			}
 		}
 		
-		private function getKey():void{
-			gw.call(GetKey,res);
+		private function getKey(arg:*):void{
+			gw.call(GetKey,res,arg);
 		}
 		
 	}
