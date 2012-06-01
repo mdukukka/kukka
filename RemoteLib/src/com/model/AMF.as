@@ -7,7 +7,8 @@
 	import flash.events.IOErrorEvent;
 	import flash.events.NetStatusEvent;
 	import flash.events.SecurityErrorEvent;
-	import flash.net.*;
+	import flash.net.Responder;
+	import flash.net.NetConnection;
 	
 	public class AMF extends EventDispatcher{
 		public var gw:NetConnection;
@@ -64,6 +65,15 @@
 		
 		private function getKey(arg:*):void{
 			gw.call(GetKey,res,arg);
+		}
+		
+		public function userCheck(code:String):void{
+			gw.call('Omshanti.isValidUser',new Responder(onResultUser,onFault),"tempuser",code);
+		}
+		
+		private function onResultUser(responds:Object):void{
+			trace("AMF Connection respond for key=: dispatched",responds)
+			dispatchEvent(new AMFEvent(AMFEvent.FORUSER,responds));
 		}
 		
 	}
