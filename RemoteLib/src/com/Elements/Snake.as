@@ -54,7 +54,7 @@ package com.Elements  {
 			snake_vector = new Vector.<Element>;
 			markers_vector = new Vector.<Object>;
 			space_value = 2;
-			timer = new Timer(1200); //Every 50th millisecond, the moveIt() function will be fired!
+			timer = new Timer(500); //Every 50th millisecond, the moveIt() function will be fired!
 			dead = false;
 			min_elements = 1;
 			//apple = new Element(0xFF0000, 1,10, 10); //red, not transparent, width:10, height: 10;
@@ -71,7 +71,8 @@ package com.Elements  {
 				snake_vector[i].direction = "R"; //The starting direction of the snake
 				if (i == 0){
 					//you have to place the first element on a GRID. (now: 0,0) [possible x positions: (snake_vector[0].width+space_value)*<UINT> ]
-					attachElement(snake_vector[i],0,0,snake_vector[i].direction) 
+					//attachElement(snake_vector[i],0,0,snake_vector[i].direction)
+					attachElement(snake_vector[i],(snake_vector[0].width+space_value),(snake_vector[0].height+space_value),snake_vector[i].direction)  //for dead game..
 					snake_vector[0].alpha = 0.7;
 				}else{
 					attachElement(snake_vector[i], snake_vector[i - 1].x, snake_vector[i - 1].y, snake_vector[i - 1].direction);
@@ -186,12 +187,17 @@ package com.Elements  {
 		}
 		
 		private function GAME_OVER():void {
+			trace("dd8 GAME_OVER");
+			dispatchEvent(new Event("died"));
+		}
+		
+		//call from board after got chat message..
+		public function reStartSnake():void{
 			dead = true;
 			timer.stop();
 			while (this.numChildren)
 				this.removeChildAt(0);
 			timer.removeEventListener(TimerEvent.TIMER,moveIt);
-			dispatchEvent(new Event("died"));
 			init();
 		}
 		
